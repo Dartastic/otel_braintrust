@@ -2,7 +2,6 @@
 // Copyright 2025-2026 Mindful Software LLC d/b/a Dartastic.io, All rights reserved.
 
 import 'package:dartastic_opentelemetry/dartastic_opentelemetry.dart';
-import 'package:dartastic_opentelemetry_api/dartastic_opentelemetry_api.dart';
 
 import 'otel_braintrust_suppression.dart';
 
@@ -78,87 +77,122 @@ Future<T> tracedBraintrust<T>({
   final t = tracer ?? OTel.tracerProvider().getTracer('otel_braintrust');
   final span = t.startSpan('braintrust $operation', kind: SpanKind.client);
   try {
-    span.setStringAttribute('rpc.system', 'braintrust');
-    span.setStringAttribute('rpc.method', operation);
+    span.addAttributes(
+        OTel.attributes([OTel.attributeString('rpc.system', 'braintrust')]));
+    span.addAttributes(
+        OTel.attributes([OTel.attributeString('rpc.method', operation)]));
     final r = await invoke();
     final res = r.result;
     if (res != null) {
       if (res.orgId != null) {
-        span.setStringAttribute('braintrust.org.id', res.orgId!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('braintrust.org.id', res.orgId!)]));
       }
       if (res.projectId != null) {
-        span.setStringAttribute('braintrust.project.id', res.projectId!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('braintrust.project.id', res.projectId!)]));
       }
       if (res.projectName != null) {
-        span.setStringAttribute('braintrust.project.name', res.projectName!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString('braintrust.project.name', res.projectName!)
+        ]));
       }
       if (res.experimentId != null) {
-        span.setStringAttribute('braintrust.experiment.id', res.experimentId!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString('braintrust.experiment.id', res.experimentId!)
+        ]));
       }
       if (res.experimentName != null) {
-        span.setStringAttribute(
-            'braintrust.experiment.name', res.experimentName!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString(
+              'braintrust.experiment.name', res.experimentName!)
+        ]));
       }
       if (res.datasetId != null) {
-        span.setStringAttribute('braintrust.dataset.id', res.datasetId!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('braintrust.dataset.id', res.datasetId!)]));
       }
       if (res.datasetName != null) {
-        span.setStringAttribute('braintrust.dataset.name', res.datasetName!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString('braintrust.dataset.name', res.datasetName!)
+        ]));
       }
       if (res.datasetSize != null) {
-        span.setIntAttribute('braintrust.dataset.size', res.datasetSize!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeInt('braintrust.dataset.size', res.datasetSize!)]));
       }
       if (res.promptId != null) {
-        span.setStringAttribute('braintrust.prompt.id', res.promptId!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('braintrust.prompt.id', res.promptId!)]));
       }
       if (res.promptVersion != null) {
-        span.setIntAttribute('braintrust.prompt.version', res.promptVersion!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeInt('braintrust.prompt.version', res.promptVersion!)
+        ]));
       }
       if (res.evaluatorName != null) {
-        span.setStringAttribute(
-            'braintrust.evaluator.name', res.evaluatorName!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString('braintrust.evaluator.name', res.evaluatorName!)
+        ]));
       }
       if (res.scorerName != null) {
-        span.setStringAttribute('braintrust.scorer.name', res.scorerName!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('braintrust.scorer.name', res.scorerName!)]));
       }
       if (res.scoreValue != null) {
-        span.setDoubleAttribute('braintrust.score.value', res.scoreValue!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeDouble('braintrust.score.value', res.scoreValue!)]));
       }
       if (res.passedCount != null) {
-        span.setIntAttribute('braintrust.passed.count', res.passedCount!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeInt('braintrust.passed.count', res.passedCount!)]));
       }
       if (res.failedCount != null) {
-        span.setIntAttribute('braintrust.failed.count', res.failedCount!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeInt('braintrust.failed.count', res.failedCount!)]));
       }
       if (res.modelName != null) {
-        span.setStringAttribute('gen_ai.request.model', res.modelName!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('gen_ai.request.model', res.modelName!)]));
       }
       if (res.modelProvider != null) {
-        span.setStringAttribute('gen_ai.system', res.modelProvider!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('gen_ai.system', res.modelProvider!)]));
       }
       if (res.tokensInput != null) {
-        span.setIntAttribute('gen_ai.usage.input_tokens', res.tokensInput!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeInt('gen_ai.usage.input_tokens', res.tokensInput!)
+        ]));
       }
       if (res.tokensOutput != null) {
-        span.setIntAttribute('gen_ai.usage.output_tokens', res.tokensOutput!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeInt('gen_ai.usage.output_tokens', res.tokensOutput!)
+        ]));
       }
       if (res.costUsdMicros != null) {
-        span.setIntAttribute('braintrust.cost.usd_micros', res.costUsdMicros!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeInt('braintrust.cost.usd_micros', res.costUsdMicros!)
+        ]));
       }
       if (res.spanKind != null) {
-        span.setStringAttribute('braintrust.span.kind', res.spanKind!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('braintrust.span.kind', res.spanKind!)]));
       }
       if (res.statusCode != null) {
-        span.setIntAttribute('http.response.status_code', res.statusCode!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeInt('http.response.status_code', res.statusCode!)]));
       }
       if (res.errorCode != null) {
-        span.setStringAttribute('braintrust.error.code', res.errorCode!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('braintrust.error.code', res.errorCode!)]));
       }
       final fail = res.errorCode != null ||
           (res.statusCode != null && res.statusCode! >= 400);
       if (fail) {
-        span.setStringAttribute(
-            ErrorResource.errorType.key, res.errorCode ?? 'braintrust.error');
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString(
+              ErrorResource.errorType.key, res.errorCode ?? 'braintrust.error')
+        ]));
         span.setStatus(SpanStatusCode.Error, res.errorMessage);
       }
     }
