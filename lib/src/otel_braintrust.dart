@@ -1,11 +1,12 @@
-// Licensed under the Dartastic Pro Software License Agreement.
+// Licensed under the Apache License, Version 2.0
 // Copyright 2025-2026 Mindful Software LLC d/b/a Dartastic.io, All rights reserved.
 
-import 'package:dartastic_opentelemetry/dartastic_opentelemetry.dart';
+import 'package:dartastic_opentelemetry_api/dartastic_opentelemetry_api.dart';
 
 import 'otel_braintrust_suppression.dart';
 
 class BraintrustResult {
+  /// Creates a result.
   const BraintrustResult({
     this.orgId,
     this.projectId,
@@ -59,8 +60,13 @@ class BraintrustResult {
   final String? errorMessage;
 }
 
+/// What a traced call returned: the value for the caller plus fields
+/// recorded on the span.
 class BraintrustCallResult<T> {
+  /// Creates a call result.
   const BraintrustCallResult({required this.value, this.result});
+
+  /// The value returned to the caller.
   final T value;
   final BraintrustResult? result;
 }
@@ -68,130 +74,140 @@ class BraintrustCallResult<T> {
 Future<T> tracedBraintrust<T>({
   required String operation,
   required Future<BraintrustCallResult<T>> Function() invoke,
-  Tracer? tracer,
+  APITracer? tracer,
 }) async {
   if (braintrustInstrumentationSuppressed()) {
     final r = await invoke();
     return r.value;
   }
-  final t = tracer ?? OTel.tracerProvider().getTracer('otel_braintrust');
+  final t = tracer ?? OTelAPI.tracerProvider().getTracer('otel_braintrust');
   final span = t.startSpan('braintrust $operation', kind: SpanKind.client);
   try {
+    span.addAttributes(OTelAPI.attributes(
+        [OTelAPI.attributeString('rpc.system', 'braintrust')]));
     span.addAttributes(
-        OTel.attributes([OTel.attributeString('rpc.system', 'braintrust')]));
-    span.addAttributes(
-        OTel.attributes([OTel.attributeString('rpc.method', operation)]));
+        OTelAPI.attributes([OTelAPI.attributeString('rpc.method', operation)]));
     final r = await invoke();
     final res = r.result;
     if (res != null) {
       if (res.orgId != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('braintrust.org.id', res.orgId!)]));
+        span.addAttributes(OTelAPI.attributes(
+            [OTelAPI.attributeString('braintrust.org.id', res.orgId!)]));
       }
       if (res.projectId != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('braintrust.project.id', res.projectId!)]));
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString('braintrust.project.id', res.projectId!)
+        ]));
       }
       if (res.projectName != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString('braintrust.project.name', res.projectName!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString('braintrust.project.name', res.projectName!)
         ]));
       }
       if (res.experimentId != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString('braintrust.experiment.id', res.experimentId!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString('braintrust.experiment.id', res.experimentId!)
         ]));
       }
       if (res.experimentName != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString(
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString(
               'braintrust.experiment.name', res.experimentName!)
         ]));
       }
       if (res.datasetId != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('braintrust.dataset.id', res.datasetId!)]));
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString('braintrust.dataset.id', res.datasetId!)
+        ]));
       }
       if (res.datasetName != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString('braintrust.dataset.name', res.datasetName!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString('braintrust.dataset.name', res.datasetName!)
         ]));
       }
       if (res.datasetSize != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeInt('braintrust.dataset.size', res.datasetSize!)]));
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeInt('braintrust.dataset.size', res.datasetSize!)
+        ]));
       }
       if (res.promptId != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('braintrust.prompt.id', res.promptId!)]));
+        span.addAttributes(OTelAPI.attributes(
+            [OTelAPI.attributeString('braintrust.prompt.id', res.promptId!)]));
       }
       if (res.promptVersion != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeInt('braintrust.prompt.version', res.promptVersion!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeInt('braintrust.prompt.version', res.promptVersion!)
         ]));
       }
       if (res.evaluatorName != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString('braintrust.evaluator.name', res.evaluatorName!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString(
+              'braintrust.evaluator.name', res.evaluatorName!)
         ]));
       }
       if (res.scorerName != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('braintrust.scorer.name', res.scorerName!)]));
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString('braintrust.scorer.name', res.scorerName!)
+        ]));
       }
       if (res.scoreValue != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeDouble('braintrust.score.value', res.scoreValue!)]));
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeDouble('braintrust.score.value', res.scoreValue!)
+        ]));
       }
       if (res.passedCount != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeInt('braintrust.passed.count', res.passedCount!)]));
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeInt('braintrust.passed.count', res.passedCount!)
+        ]));
       }
       if (res.failedCount != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeInt('braintrust.failed.count', res.failedCount!)]));
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeInt('braintrust.failed.count', res.failedCount!)
+        ]));
       }
       if (res.modelName != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('gen_ai.request.model', res.modelName!)]));
+        span.addAttributes(OTelAPI.attributes(
+            [OTelAPI.attributeString('gen_ai.request.model', res.modelName!)]));
       }
       if (res.modelProvider != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('gen_ai.system', res.modelProvider!)]));
+        span.addAttributes(OTelAPI.attributes(
+            [OTelAPI.attributeString('gen_ai.system', res.modelProvider!)]));
       }
       if (res.tokensInput != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeInt('gen_ai.usage.input_tokens', res.tokensInput!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeInt('gen_ai.usage.input_tokens', res.tokensInput!)
         ]));
       }
       if (res.tokensOutput != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeInt('gen_ai.usage.output_tokens', res.tokensOutput!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeInt('gen_ai.usage.output_tokens', res.tokensOutput!)
         ]));
       }
       if (res.costUsdMicros != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeInt('braintrust.cost.usd_micros', res.costUsdMicros!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeInt('braintrust.cost.usd_micros', res.costUsdMicros!)
         ]));
       }
       if (res.spanKind != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('braintrust.span.kind', res.spanKind!)]));
+        span.addAttributes(OTelAPI.attributes(
+            [OTelAPI.attributeString('braintrust.span.kind', res.spanKind!)]));
       }
       if (res.statusCode != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeInt('http.response.status_code', res.statusCode!)]));
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeInt('http.response.status_code', res.statusCode!)
+        ]));
       }
       if (res.errorCode != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('braintrust.error.code', res.errorCode!)]));
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString('braintrust.error.code', res.errorCode!)
+        ]));
       }
       final fail = res.errorCode != null ||
           (res.statusCode != null && res.statusCode! >= 400);
       if (fail) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString(
-              ErrorResource.errorType.key, res.errorCode ?? 'braintrust.error')
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString(ErrorAttributes.errorType.key,
+              res.errorCode ?? 'braintrust.error')
         ]));
         span.setStatus(SpanStatusCode.Error, res.errorMessage);
       }
