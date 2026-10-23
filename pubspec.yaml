@@ -2,7 +2,7 @@ name: otel_braintrust
 description: >-
   OpenTelemetry instrumentation for braintrust by Dartastic.io. Adds standard
   OpenTelemetry observability to applications that use braintrust.
-version: 0.1.0-wip
+version: 0.1.0
 repository: https://github.com/dartastic/otel_braintrust
 homepage: https://dartastic.io
 
